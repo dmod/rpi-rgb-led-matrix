@@ -8,7 +8,7 @@ version = "0.0.1+20250323"
 description = "Packaged version of Christoph Friedrich's rpi-rgb-led-matrix library."
 authors = [{name="Christoph Friedrich", email="christoph.friedrich@vonaffenfels.de"}]
 maintainers = [{name="Chris Gill", email="chris@chrisgill.net"}]
-license = {text = "GPL-2.0-or-later"}
+license = "GPL-2.0-or-later"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = ["Pillow"]

@@ -10,6 +10,7 @@ import subprocess
 import sys
 from setuptools import setup, Extension
 from setuptools.command.build_ext import build_ext
+from Cython.Build import cythonize
 
 # Paths relative to this setup.py file
 BINDING_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -34,10 +35,10 @@ class BuildRGBMatrixLib(build_ext):
         super().run()
 
 
-# C++ Extension modules
+# C++ Extension modules (using .pyx Cython sources)
 core_ext = Extension(
     name='rgbmatrix.core',
-    sources=['rgbmatrix/core.cpp', 'rgbmatrix/shims/pillow.c'],
+    sources=['rgbmatrix/core.pyx', 'rgbmatrix/shims/pillow.c'],
     include_dirs=[INCLUDE_DIR, 'rgbmatrix/shims'],
     library_dirs=[LIB_DIR],
     libraries=['rgbmatrix'],
@@ -47,7 +48,7 @@ core_ext = Extension(
 
 graphics_ext = Extension(
     name='rgbmatrix.graphics',
-    sources=['rgbmatrix/graphics.cpp'],
+    sources=['rgbmatrix/graphics.pyx'],
     include_dirs=[INCLUDE_DIR],
     library_dirs=[LIB_DIR],
     libraries=['rgbmatrix'],
@@ -56,6 +57,6 @@ graphics_ext = Extension(
 )
 
 setup(
-    ext_modules=[core_ext, graphics_ext],
+    ext_modules=cythonize([core_ext, graphics_ext], language_level=3),
     cmdclass={'build_ext': BuildRGBMatrixLib},
 )
