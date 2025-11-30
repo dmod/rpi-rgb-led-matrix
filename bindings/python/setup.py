@@ -1,5 +1,9 @@
 #!/usr/bin/env python
-"""Setup script for rgbmatrix Python bindings with automatic C++ library build."""
+"""Setup script for rgbmatrix Python bindings with automatic C++ library build.
+
+This file handles the custom build logic for C++ extensions.
+Static metadata is defined in pyproject.toml.
+"""
 
 import os
 import subprocess
@@ -19,7 +23,6 @@ class BuildRGBMatrixLib(build_ext):
     
     def run(self):
         """Build the C++ library before building Python extensions."""
-        # Build the C++ library
         print("Building rpi-rgb-led-matrix C++ library...")
         try:
             subprocess.check_call(['make', '-C', LIB_DIR])
@@ -28,37 +31,31 @@ class BuildRGBMatrixLib(build_ext):
             print(f"Error building C++ library: {e}", file=sys.stderr)
             sys.exit(1)
         
-        # Now build the Python extensions
         super().run()
 
 
+# C++ Extension modules
 core_ext = Extension(
-    name                = 'core',
-    sources             = ['rgbmatrix/core.cpp', 'rgbmatrix/shims/pillow.c'],
-    include_dirs        = ['../../include', 'rgbmatrix/shims'],
-    library_dirs        = ['../../lib'],
-    libraries           = ['rgbmatrix'],
-    extra_compile_args  = ["-O3", "-Wall"],
-    language            = 'c++'
+    name='rgbmatrix.core',
+    sources=['rgbmatrix/core.cpp', 'rgbmatrix/shims/pillow.c'],
+    include_dirs=[INCLUDE_DIR, 'rgbmatrix/shims'],
+    library_dirs=[LIB_DIR],
+    libraries=['rgbmatrix'],
+    extra_compile_args=['-O3', '-Wall'],
+    language='c++',
 )
 
 graphics_ext = Extension(
-    name                = 'graphics',
-    sources             = ['rgbmatrix/graphics.cpp'],
-    include_dirs        = ['../../include'],
-    library_dirs        = ['../../lib'],
-    libraries           = ['rgbmatrix'],
-    extra_compile_args  = ["-O3", "-Wall"],
-    language            = 'c++'
+    name='rgbmatrix.graphics',
+    sources=['rgbmatrix/graphics.cpp'],
+    include_dirs=[INCLUDE_DIR],
+    library_dirs=[LIB_DIR],
+    libraries=['rgbmatrix'],
+    extra_compile_args=['-O3', '-Wall'],
+    language='c++',
 )
 
 setup(
-    name                = 'rgbmatrix',
-    version             = '0.0.1',
-    author              = 'Christoph Friedrich',
-    author_email        = 'christoph.friedrich@vonaffenfels.de',
-    classifiers         = ['Development Status :: 3 - Alpha'],
-    ext_package         = 'rgbmatrix',
-    ext_modules         = [core_ext, graphics_ext],
-    packages            = ['rgbmatrix']
+    ext_modules=[core_ext, graphics_ext],
+    cmdclass={'build_ext': BuildRGBMatrixLib},
 )
