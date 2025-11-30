@@ -1,9 +1,36 @@
 #!/usr/bin/env python
+"""Setup script for rgbmatrix Python bindings with automatic C++ library build."""
 
-# The following distutils seems to stop working with newer
-# Python version >= 3.12
-# Someone with Python knowledge, please fix.
-from distutils.core import setup, Extension
+import os
+import subprocess
+import sys
+from setuptools import setup, Extension
+from setuptools.command.build_ext import build_ext
+
+# Paths relative to this setup.py file
+BINDING_DIR = os.path.dirname(os.path.abspath(__file__))
+ROOT_DIR = os.path.abspath(os.path.join(BINDING_DIR, '..', '..'))
+LIB_DIR = os.path.join(ROOT_DIR, 'lib')
+INCLUDE_DIR = os.path.join(ROOT_DIR, 'include')
+
+
+class BuildRGBMatrixLib(build_ext):
+    """Custom build command that compiles the C++ library first."""
+    
+    def run(self):
+        """Build the C++ library before building Python extensions."""
+        # Build the C++ library
+        print("Building rpi-rgb-led-matrix C++ library...")
+        try:
+            subprocess.check_call(['make', '-C', LIB_DIR])
+            print("C++ library built successfully")
+        except subprocess.CalledProcessError as e:
+            print(f"Error building C++ library: {e}", file=sys.stderr)
+            sys.exit(1)
+        
+        # Now build the Python extensions
+        super().run()
+
 
 core_ext = Extension(
     name                = 'core',
