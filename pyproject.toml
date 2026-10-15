@@ -1,0 +1,20 @@
+[build-system]
+requires = ["scikit-build-core>=1.1,<2", "cython>=3.3,<4"]
+build-backend = "scikit_build_core.build"
+
+[project]
+name = "rgbmatrix"
+version = "0.1.0+dmod.20261014"
+description = "Python bindings for Raspberry Pi 2-4 RGB LED matrix panels, trimmed from hzeller/rpi-rgb-led-matrix for PlaneSign."
+authors = [
+    {name = "Henner Zeller", email = "h.zeller@acm.org"},
+    {name = "Christoph Friedrich", email = "christoph.friedrich@vonaffenfels.de"},
+]
+license = "GPL-2.0-or-later"
+readme = "README.md"
+requires-python = ">=3.11"
+
+[tool.scikit-build]
+minimum-version = "build-system.requires"
+# The panel timing depends on the optimization level; see CMakeLists.txt.
+cmake.build-type = "Release"
